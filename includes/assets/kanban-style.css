@@ -1,0 +1,160 @@
+/* Estilos Gerais do Quadro Kanban */
+.wrap h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+#kanban-board {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Colunas do Kanban */
+.kanban-column {
+    flex: 1;
+    min-width: 300px;
+    max-width: 320px;
+    background-color: #f0f2f5; /* Um cinza mais suave */
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.kanban-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.kanban-card-count {
+    background-color: #e5e7eb;
+    color: #4b5563;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.kanban-column-body {
+    padding: 8px;
+    flex-grow: 1;
+    min-height: 500px;
+    transition: background-color 0.2s ease;
+}
+
+/* Cards de Demanda */
+.kanban-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: grab;
+    border-left-width: 4px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kanban-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+    background-color: #f9fafb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-card-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.kanban-card-title a {
+    text-decoration: none;
+    color: #111827;
+}
+
+.kanban-card-title a:hover {
+    color: #4f46e5; /* Indigo */
+}
+
+.kanban-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.kanban-card-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.kanban-card-meta .dashicons {
+    font-size: 18px;
+    color: #9ca3af;
+    height: 18px;
+    width: 18px;
+}
+
+.kanban-card-footer {
+    display: flex;
+}
+
+.kanban-priority-badge {
+    padding: 3px 10px;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
+}
+
+/* Cores para Prioridades */
+.priority-high { border-left-color: #ef4444; }
+.priority-high .kanban-priority-badge { background-color: #ef4444; } /* Vermelho */
+
+.priority-medium-high { border-left-color: #f97316; }
+.priority-medium-high .kanban-priority-badge { background-color: #f97316; } /* Laranja */
+
+.priority-medium { border-left-color: #3b82f6; }
+.priority-medium .kanban-priority-badge { background-color: #3b82f6; } /* Azul */
+
+.low, .priority-low { border-left-color: #6b7280; }
+.low .kanban-priority-badge, .priority-low .kanban-priority-badge { background-color: #6b7280; } /* Cinza */
+
+/* Placeholder para arrastar e soltar */
+.kanban-card-placeholder {
+    background-color: #e0e7ff;
+    border: 1px dashed #a5b4fc;
+    height: 80px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+/* Feedback de sucesso */
+.kanban-card-success {
+    transition: background-color 0.5s ease;
+    background-color: #f0fdf4 !important; /* Verde muito claro */
+    border-color: #bbf7d0;
+}
+
+.saving-feedback { 
+    font-style: italic; 
+    color: #64748b; 
+}

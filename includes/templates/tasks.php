@@ -16,15 +16,25 @@ function sistema_arte_tasks_template($tasks) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($tasks as $task): ?>
+                        <?php foreach ($tasks as $post): ?>
+                            <?php
+                                $due_date = get_post_meta($post->ID, '_due_date', true);
+                                $priority = get_post_meta($post->ID, '_priority', true);
+                                $priorities_text = [
+                                    '1' => 'Alta',
+                                    '2' => 'Média-Alta',
+                                    '3' => 'Média',
+                                    '4' => 'Baixa'
+                                ];
+                            ?>
                             <tr class="border-b hover:bg-gray-50 transition-colors duration-150">
-                                <td class="p-3 text-gray-600"><?php echo esc_html($task['id']); ?></td>
-                                <td class="p-3 font-medium text-gray-800"><?php echo esc_html($task['title']); ?></td>
+                                <td class="p-3 text-gray-600 font-semibold"><?php echo esc_html(function_exists('sistema_arte_format_id') ? sistema_arte_format_id($post->ID) : $post->ID); ?></td>
+                                <td class="p-3 font-medium text-gray-800"><?php echo esc_html($post->post_title); ?></td>
                                 <td class="p-3 text-gray-600">
                                     <?php
-                                    if ($task['due_date']) {
+                                    if ($due_date) {
                                         try {
-                                            $date = new DateTime($task['due_date']);
+                                            $date = new DateTime($due_date);
                                             echo esc_html($date->format('d/m/Y H:i'));
                                         } catch (Exception $e) {
                                             echo '-';
@@ -35,11 +45,11 @@ function sistema_arte_tasks_template($tasks) {
                                     ?>
                                 </td>
                                 <td class="p-3">
-                                    <?php if ($task['priority']): ?>
+                                    <?php if ($priority): ?>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium 
-                                            <?php echo esc_attr($task['priority'] <= 2 ? 'bg-red-100 text-red-800' : 
-                                                  ($task['priority'] <= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800')); ?>">
-                                            <?php echo esc_html($task['priority']); ?>
+                                            <?php echo esc_attr($priority <= 2 ? 'bg-red-100 text-red-800' : 
+                                                  ($priority <= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800')); ?>">
+                                            <?php echo esc_html($priorities_text[$priority] ?? 'N/D'); ?>
                                         </span>
                                     <?php else: ?>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">-</span>

@@ -1,5 +1,25 @@
 <?php
 function sistema_arte_form_template($message) {
+    // Centralizar opções para facilitar a manutenção
+    $departments = [
+        'SARH' => 'SARH', 'SEMAP' => 'SEMAP', 'SECOM' => 'SECOM', 'SEMCI' => 'SEMCI',
+        'SEDESO' => 'SEDESO', 'SEDUC' => 'SEDUC', 'SEFIN' => 'SEFIN', 'SEGOV' => 'SEGOV',
+        'SEMMA' => 'SEMMA', 'SEMOSP' => 'SEMOSP', 'SEPLAN' => 'SEPLAN', 'PGM' => 'PGM',
+        'SEMS' => 'SEMS', 'SESP' => 'SESP', 'SELTC' => 'SELTC', 'SEDEC' => 'SEDEC',
+        'SEMOB' => 'SEMOB', 'OUTRAS' => 'OUTRAS'
+    ];
+
+    $priorities = [
+        '1' => 'Alta',
+        '2' => 'Média-Alta',
+        '3' => 'Média',
+        '4' => 'Baixa'
+    ];
+
+    // Valores atuais para manter no formulário em caso de erro
+    $current_department = isset($_POST['department']) ? wp_unslash($_POST['department']) : '';
+    $current_priority = isset($_POST['priority']) ? wp_unslash($_POST['priority']) : '3'; // Padrão é 'Média'
+
     // Calcular data padrão (hoje + 7 dias) no formato YYYY-MM-DDTHH:MM
     $default_due_date = '';
     try {
@@ -24,7 +44,7 @@ function sistema_arte_form_template($message) {
             </div>
         <?php endif; ?>
 
-        <form method="POST" class="space-y-4" id="sistema-arte-form">
+        <form method="POST" class="space-y-4" id="sistema-arte-form" enctype="multipart/form-data">
             <?php wp_nonce_field('sistema_arte_nonce', 'sistema_arte_nonce'); ?>
             
             <!-- Campo Título (obrigatório) -->
@@ -51,24 +71,11 @@ function sistema_arte_form_template($message) {
                     <select id="department" name="department" required
                             class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
                         <option value="">Selecione...</option>
-                           <option value="SARH" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SARH') ? 'selected' : ''; ?>>SARH</option>
-    <option value="SEMAP" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMAP') ? 'selected' : ''; ?>>SEMAP</option>
-    <option value="SECOM" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SECOM') ? 'selected' : ''; ?>>SECOM</option>
-    <option value="SEMCI" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMCI') ? 'selected' : ''; ?>>SEMCI</option>
-    <option value="SEDESO" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEDESO') ? 'selected' : ''; ?>>SEDESO</option>
-    <option value="SEDUC" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEDUC') ? 'selected' : ''; ?>>SEDUC</option>
-    <option value="SEFIN" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEFIN') ? 'selected' : ''; ?>>SEFIN</option>
-    <option value="SEGOV" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEGOV') ? 'selected' : ''; ?>>SEGOV</option>
-    <option value="SEMMA" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMMA') ? 'selected' : ''; ?>>SEMMA</option>
-    <option value="SEMOSP" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMOSP') ? 'selected' : ''; ?>>SEMOSP</option>
-    <option value="SEPLAN" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEPLAN') ? 'selected' : ''; ?>>SEPLAN</option>
-    <option value="PGM" <?php echo (isset($_POST['department']) && $_POST['department'] == 'PGM') ? 'selected' : ''; ?>>PGM</option>
-    <option value="SEMS" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMS') ? 'selected' : ''; ?>>SEMS</option>
-    <option value="SESP" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SESP') ? 'selected' : ''; ?>>SESP</option>
-    <option value="SELTC" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SELTC') ? 'selected' : ''; ?>>SELTC</option>
-    <option value="SEDEC" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEDEC') ? 'selected' : ''; ?>>SEDEC</option>
-    <option value="SEMOB" <?php echo (isset($_POST['department']) && $_POST['department'] == 'SEMOB') ? 'selected' : ''; ?>>SEMOB</option>
-    <option value="OUTRAS" <?php echo (isset($_POST['department']) && $_POST['department'] == 'OUTRAS') ? 'selected' : ''; ?>>OUTRAS</option>
+                        <?php foreach ($departments as $value => $label): ?>
+                            <option value="<?php echo esc_attr($value); ?>" <?php selected($current_department, $value); ?>>
+                                <?php echo esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -82,8 +89,7 @@ function sistema_arte_form_template($message) {
                        placeholder="(99) 99999-9999">
             </div>
 
-            <!-- Descrição (campo original, agora oculto) -->
-            <input type="hidden" id="description" name="description">
+            <!-- O campo 'description' oculto não é mais necessário -->
 
             <!-- Campo para detalhes adicionais -->
             <div>
@@ -91,6 +97,18 @@ function sistema_arte_form_template($message) {
                 <textarea id="additional_info" name="additional_info" rows="4"
                           class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
                           required><?php echo esc_textarea(isset($_POST['additional_info']) ? wp_unslash($_POST['additional_info']) : ''); ?></textarea>
+            </div>
+
+            <!-- Campo de Anexo -->
+            <div class="relative">
+                <label for="attachment" class="block text-sm font-medium text-gray-700 mb-1">Anexar Arquivos (opcional)</label>
+                <div class="mt-1 flex items-center">
+                    <label for="attachment" class="w-full cursor-pointer bg-white rounded-md border border-gray-300 p-3 shadow-sm flex items-center justify-between hover:border-indigo-500">
+                        <span class="text-gray-500" id="attachment-label">Nenhum arquivo selecionado</span>
+                        <span class="px-4 py-1.5 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-full hover:bg-indigo-200">Escolher arquivo</span>
+                    </label>
+                    <input type="file" id="attachment" name="attachment" class="sr-only" onchange="document.getElementById('attachment-label').textContent = this.files[0] ? this.files[0].name : 'Nenhum arquivo selecionado';">
+                </div>
             </div>
 
             <!-- NOVOS CAMPOS VISÍVEIS: Data de Entrega e Prioridade -->
@@ -108,10 +126,11 @@ function sistema_arte_form_template($message) {
                     <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Prioridade</label>
                     <select id="priority" name="priority"
                             class="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                        <option value="1" <?php echo (isset($_POST['priority']) && $_POST['priority'] == '1') ? 'selected' : ''; ?>>Alta</option>
-                        <option value="2" <?php echo (isset($_POST['priority']) && $_POST['priority'] == '2') ? 'selected' : ''; ?>>Média-Alta</option>
-                        <option value="3" <?php echo (!isset($_POST['priority']) || $_POST['priority'] == '3') ? 'selected' : ''; ?>>Média</option>
-                        <option value="4" <?php echo (isset($_POST['priority']) && $_POST['priority'] == '4') ? 'selected' : ''; ?>>Baixa</option>
+                        <?php foreach ($priorities as $value => $label): ?>
+                            <option value="<?php echo esc_attr($value); ?>" <?php selected($current_priority, $value); ?>>
+                                <?php echo esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
